@@ -1,0 +1,14 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>DevOps Todo</title>
+<style>body{font-family:sans-serif;max-width:480px;margin:40px auto}li{cursor:pointer;margin:6px 0}.done{text-decoration:line-through;color:#888}</style></head>
+<body><h1>DevOps Todo</h1>
+<input id="t" placeholder="New task"><button onclick="add()">Add</button>
+<ul id="l"></ul>
+<script>
+async function load(){const r=await fetch('/api/todos');const d=await r.json();
+ l.innerHTML=d.map(x=>`<li class="${x.done?'done':''}" onclick="tog(${x.id})">${x.title} <a onclick="event.stopPropagation();del(${x.id})">[x]</a></li>`).join('')}
+async function add(){if(!t.value)return;await fetch('/api/todos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:t.value})});t.value='';load()}
+async function tog(i){await fetch(`/api/todos/${i}/toggle`,{method:'PATCH'});load()}
+async function del(i){await fetch(`/api/todos/${i}`,{method:'DELETE'});load()}
+load();
+</script></body></html>
